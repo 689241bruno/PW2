@@ -33,11 +33,19 @@
 
     require 'Contato.class.php';
 
-    $email = $_POST['email'];
-    $senha = $_POST['senha'];
-    $nome = $_POST['nome'];
-    $contato = new Contato();
-    $contato->insertUser($nome, $email, $senha);
+    if ($_SERVER["REQUEST_METHOD"] == "POST") {
+        // Usar isset() para verificar se as chaves existem antes de acessá-las
+        $email = isset($_POST['email']) ? $_POST['email'] : "desconhecido@gmail.com";
+        $senha = isset($_POST['senha']) ? $_POST['senha'] : "desconhecido123";
+        $nome = isset($_POST['nome']) ? $_POST['nome'] : "desconhecido";
+
+        // Criar uma instância da classe Contato e chamar o método insertUser
+        $contato = new Contato();
+        $contato->insertUser($nome, $email, $senha);
+        echo "<script>
+            alert('Usuário inserido com sucesso!');
+            </script>";
+    }
 
     ?>
 </body>
