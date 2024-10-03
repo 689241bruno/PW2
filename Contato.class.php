@@ -63,6 +63,7 @@ class Contato{
             // echo $th;
         }
     }
+
        
     function insertUser($nome,$email,$senha){
         //passo 1  cria uam variavel com a consulta SQL
@@ -90,5 +91,53 @@ class Contato{
         $atvd->bindValue(":dv",$data_venc);
 
         return $atvd->execute();
+    }
+
+    function verificarEmailExiste($email) {
+        $sql = "SELECT email FROM usuarios WHERE email = :e";
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->bindParam(':e', $email, PDO::PARAM_STR);
+        $stmt->execute();
+
+        if ($stmt->rowCount() > 0) {
+            return true;  // Email já existe
+        } else {
+            return false; // Email não existe
+        }
+    }
+
+    function verificarLogin($email, $senha) {
+        // Preparar a consulta para buscar o e-mail
+        $sql = "SELECT senha FROM usuarios WHERE email = :e";
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->bindParam(':e', $email, PDO::PARAM_STR);
+        $stmt->execute();
+    
+        // Verificar se o e-mail existe
+        if ($stmt->rowCount() > 0) {
+            $usuario = $stmt->fetch(PDO::FETCH_ASSOC);
+            $senhaUser = $usuario['senha']; // Senha armazenada no banco (hash)
+    
+            // Verificar a senha usando password_verify()
+            if($senhaUser == $senha){
+                return true;
+                
+            } else{
+                return false;
+            }
+        } else {
+            return false; // E-mail não encontrado
+
+        }
+    }
+
+    function getNomeUser($email){
+        $sql = "SELECT nome FROM usuarios WHERE email = :e";
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->bindParam(':e', $email, PDO::PARAM_STR);
+        $stmt->execute();
+        $usuario = $stmt->fetch(PDO::FETCH_ASSOC);
+        $nomeUser = $usuario['nome'];
+        return $nomeUser;
     }
 }
